@@ -1,4 +1,5 @@
 # taskmanagementsystem
+
 Task Management System in Go 
 
 
@@ -6,29 +7,53 @@ Task Management System in Go
 
 A Task Management System with CRUD (Create, Read, Update, Delete) capabilities for tasks. Each task can be assigned to multiple users and includes a status field for filtering. The API is designed for a single client, with pagination set to 20 for GET requests. Tasks are only visible to the users assigned to them.
 
-Design Decisions: 
-1. I'm using micro services architecture because
-2. I'm using relational database postgresql database because 
-3. I'm containerising the database and task service apis in seperate docker containers to ensure seamless running of these services in different environments. 
-4. I'm using REST API for http calls because 
+### Design Decisions for Task Management Application
+
+#### Microservices Architecture: 
+
+I have opted for a microservices architecture for the Task Management System to ensure a clear separation of concerns and improve the modularity of the application. Microservices allow for independent deployment of each service, ensuring that different components (e.g., Task Management) can evolve without tightly coupling them with other parts of the system. This architecture also makes it easier to scale individual services based on demand.
+
+#### Relational Database (PostgreSQL): 
+
+For data storage, I have chosen PostgreSQL as the relational database. Given the structured nature of the data and the relationships between different entities (e.g., tasks, users), PostgreSQL is well-suited to handle these requirements while ensuring consistency, atomicity, and data integrity. The relational model also supports complex queries and transactions effectively. In the future, if load increases, PostgreSQL can be scaled horizontally using read replicas and sharding to ensure better performance.
+
+#### Containerization with Docker: 
+
+Both the PostgreSQL database and the Task Management service will be containerized using Docker. This approach ensures that the services can be consistently deployed across various environments, such as development, staging, and production. Containerization also enables the application to run seamlessly on different machines, improving the portability and scalability of the system.
+
+#### RESTful API for Communication: 
+
+To facilitate communication between the client and the service, and between services, I am utilizing REST APIs. This choice allows for simple, synchronous communication between the client and service, which fits the current requirements of the system. REST APIs are easy to implement and maintain, and they provide a clear and consistent interface. As the system grows, asynchronous communication options like gRPC or message queues (e.g., RabbitMQ or Kafka) can be considered to improve scalability and handle more complex use cases.
+
+#### Task Management Features: 
+
+The Task Management System will support basic CRUD operations (Create, Read, Update, Delete) for tasks. Additionally, pagination will be implemented for the GET /tasks endpoint to manage large datasets efficiently. Filtering by task status (e.g., GET /tasks?status=Completed) will also be supported to enable users to easily find tasks based on their current state.
+
+#### Conclusion:
 
 
+
+This design follows best practices of microservices architecture, ensuring that each component has a clear responsibility . The use of PostgreSQL ensures data consistency, and containerization with Docker facilitates smooth deployment and scalability. RESTful APIs provide a straightforward way to handle synchronous communication between services, with the potential to scale asynchronously in the future.
+
+The application adheres to Object-Oriented Programming (OOP) principles to promote cleaner, maintainable, and scalable code:
+
+DRY (Don't Repeat Yourself): The codebase avoids redundancy by reusing components and functions where applicable. This reduces the risk of errors and improves maintainability.
+
+KISS (Keep It Simple, Stupid): The system design emphasizes simplicity in the API design and service structure. Each service focuses on a specific responsibility, ensuring that it is easy to understand, extend, and maintain.
+
+The system is designed to handle growth, both in terms of functionality and scalability, making it flexible for future enhancements.
 
 ## Instructions to run the service
 
 #### Install the following dependencies 
 
+```
 * go 1.24
 * Docker 
 * postgresql 
-* Install go direct dependencies using the following command 
-
-    ```
-    go mod tidy
+* Install go direct dependencies using the following command -> go mod tidy
+* After running these commands, Go will add the necessary dependencies to your go.mod and go.sum files.
 ```
-
-* After running these commands, Go will add the necessary dependencies to your go.mod and go.sum files. 
-
 
 #### To remove any old images and containers if rerunning 
 
@@ -93,10 +118,12 @@ taskdb=# select * from tasks_users;
 
 ### 🌍 Base URL
 
+```
 {{host}}:{{port}}
+```
 
-host = "http://localhost/"
-port = 8080
+* host = "http://localhost/"
+* port = 8080
 
 #### 1. Register User 
 
@@ -122,17 +149,14 @@ curl -X POST "http://localhost:8080/register"  -H "Content-Type: application/jso
            "Password": "securepassword"
          }'
          
-         ```
-
+```
 Response: 
-
 
 ```
 
 {"message":"User registered successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4Mjg2MTd9.Mj8vug-iWGSHo7PzYSxnFqlCo3rQPR8vu0J6ah0u46s","user_id":1}
 
 ```
-
 
 #### 2. Login as User 
 
@@ -322,6 +346,11 @@ GET {{host}}:{{port}}/tasks
 ```
 
 Description: 
+
+```
+Description:
+This API endpoint retrieves a list of all tasks stored in the system. The tasks may include various details such as task names, descriptions, statuses, due dates, or other relevant information depending on the implementation. This endpoint is typically used to fetch and display all tasks to a user or an admin in a task management application.
+```
 
 Request1: 
 
@@ -699,11 +728,11 @@ curl -X DELETE http://localhost:8080/tasks/3 \
            "status": "In Progress",
            "user_ids": [2]
          }'
-         ```
+
+ ```
 
 Response 3:
+
 ```
-
 {"message":"Task deleted successfully"}
-
 ```
