@@ -20,3 +20,10 @@ type Task struct {
 	CreatedAt   time.Time `json:"created_at"` // List of user IDs assigned to this task
 }
 
+// TaskInput is used for creating or updating a task
+type TaskInput struct {
+	Title       string     `json:"title" binding:"required"`
+	Description string     `json:"description"`
+	Status      TaskStatus `json:"status" binding:"required"`
+	CreatedBy   int        `json:"created_by" binding:"required"`
+}

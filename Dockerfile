@@ -13,19 +13,23 @@ RUN go mod download
 # Copy the rest of the application files
 COPY . .
 
-# Build the Go binary
+# Build multiple services separately
 RUN go build -o main ./cmd
+RUN go build -o auth ./cmd/authservice
+RUN go build -o tasks ./cmd/taskservice
 
 # Use a minimal image for production
 FROM ubuntu:22.04
 
 WORKDIR /root/
 
-# Copy the compiled Go binary from the builder stage
+# Copy the compiled binaries from the builder stage
 COPY --from=builder /app/main .
+COPY --from=builder /app/auth .
+COPY --from=builder /app/tasks .
 
-# Expose the port
-EXPOSE 8080
+# Expose the ports
+EXPOSE 8080 8000 8001
 
-# Start the application
+# Default command (can be overridden in docker-compose)
 CMD ["./main"]
