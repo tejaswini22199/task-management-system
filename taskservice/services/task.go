@@ -5,15 +5,15 @@ import (
 	"github.com/tejaswini22199/task-management-system/taskservice/repository"
 )
 
-func CreateTask(input models.TaskInput) (models.Task, error) {
+func CreateTask(input models.TaskInput, userId int) (models.Task, error) {
 	task := models.Task{
 		Title:       input.Title,
 		Description: input.Description,
 		Status:      input.Status,
-		CreatedBy:   input.CreatedBy,
+		CreatedBy:   userId,
 	}
 
-	return repository.CreateTask(task)
+	return repository.CreateTask(task, input.UserIDs) // Pass user IDs
 }
 
 func GetTasks() ([]models.Task, error) {

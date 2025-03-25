@@ -2,6 +2,9 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
+	"strings"
+
 	"github.com/tejaswini22199/task-management-system/taskservice/models"
 )
 
@@ -11,11 +14,49 @@ func InitDB(database *sql.DB) {
 	db = database
 }
 
-func CreateTask(task models.Task) (models.Task, error) {
+func CreateTask(task models.Task, userIDs []int) (models.Task, error) {
+	tx, err := db.Begin() // Start transaction
+	if err != nil {
+		return task, err
+	}
+
+	// Insert into tasks table
 	query := `INSERT INTO tasks (title, description, status, created_by, created_at) 
 	          VALUES ($1, $2, $3, $4, NOW()) RETURNING id`
-	err := db.QueryRow(query, task.Title, task.Description, task.Status, task.CreatedBy).Scan(&task.ID)
+	err = tx.QueryRow(query, task.Title, task.Description, task.Status, task.CreatedBy).Scan(&task.ID)
+	if err != nil {
+		tx.Rollback() // Rollback on failure
+		return task, err
+	}
+
+	// Insert into tasks_users table
+	if len(userIDs) > 0 {
+		err = AssignUsersToTask(tx, task.ID, userIDs)
+		if err != nil {
+			tx.Rollback() // Rollback if assigning users fails
+			return task, err
+		}
+	}
+
+	err = tx.Commit() // Commit if everything is successful
 	return task, err
+}
+
+func AssignUsersToTask(tx *sql.Tx, taskID int, userIDs []int) error {
+	query := `INSERT INTO tasks_users (task_id, user_id) VALUES `
+
+	placeholders := []string{}
+	values := []interface{}{taskID}
+
+	for i, userID := range userIDs {
+		placeholders = append(placeholders, fmt.Sprintf("($1, $%d)", i+2))
+		values = append(values, userID)
+	}
+
+	query += strings.Join(placeholders, ",") // Construct final query
+
+	_, err := tx.Exec(query, values...) // Execute query
+	return err
 }
 
 func GetTasks() ([]models.Task, error) {

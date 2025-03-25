@@ -25,5 +25,5 @@ type TaskInput struct {
 	Title       string     `json:"title" binding:"required"`
 	Description string     `json:"description" binding:"required"`
 	Status      TaskStatus `json:"status" binding:"required"`
-	CreatedBy   int        `json:"created_by" binding:"required"`
+	UserIDs     []int      `json:"user_ids" binding:"required"`
 }
