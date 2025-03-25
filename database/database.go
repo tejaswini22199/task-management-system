@@ -1,50 +1,78 @@
-package db
+package database
 
 import (
 	"database/sql"
 	"fmt"
 	"log"
 	"os"
+	"sync"
 
-	_ "github.com/lib/pq"
+	_ "github.com/lib/pq" // PostgreSQL driver
 )
 
-var DB *sql.DB
+var (
+	db   *sql.DB
+	once sync.Once
+)
 
+// InitDB initializes the database connection only once
 func InitDB() {
-	var err error
+	once.Do(func() {
+		var err error
 
-	// Fetch values from environment variables
-	user := os.Getenv("DB_USER")
-	password := os.Getenv("DB_PASSWORD")
-	dbname := os.Getenv("DB_NAME")
-	host := os.Getenv("DB_HOST")
-	port := os.Getenv("DB_PORT")
+		// Fetch database credentials from environment variables
+		user := os.Getenv("DB_USER")
+		password := os.Getenv("DB_PASSWORD")
+		dbname := os.Getenv("DB_NAME")
+		host := os.Getenv("DB_HOST")
+		port := os.Getenv("DB_PORT")
 
-	if host == "" {
-		host = "localhost"
-	}
+		log.Println("Initializing Database...")
 
-	connStr := fmt.Sprintf(
-		"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		host, user, password, dbname, port,
-	)
+		log.Printf("DB Config: host=%s user=%s dbname=%s port=%s\n", host, user, dbname, port)
 
-	DB, err = sql.Open("postgres", connStr)
-	if err != nil {
-		log.Fatal("Failed to connect to database:", err)
-	}
+		if user == "" || password == "" || dbname == "" || host == "" || port == "" {
+			log.Fatal("Missing database environment variables")
+		}
 
-	if err = DB.Ping(); err != nil {
-		log.Fatal("Database is unreachable:", err)
-	}
+		// Default to localhost if no host is specified
+		if host == "" {
+			host = "localhost"
+		}
 
-	log.Println("Connected to PostgreSQL successfully!")
+		// Construct the connection string
+		connStr := fmt.Sprintf(
+			"host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
+			host, user, password, dbname, port,
+		)
 
-	migrateDB()
+		// Open a database connection
+		db, err = sql.Open("postgres", connStr)
+		if err != nil {
+			log.Fatalf("Failed to connect to database: %v", err)
+		}
+
+		// Verify the connection
+		if err = db.Ping(); err != nil {
+			log.Fatalf("Database is unreachable: %v", err)
+		}
+
+		log.Println("Connected to PostgreSQL successfully!")
+
+		// Run database migrations
+		migrateDB()
+	})
 }
 
-// Runs DB migrations
+// GetDB returns the singleton database instance
+func GetDB() *sql.DB {
+	if db == nil {
+		log.Fatal("Database not initialized. Call InitDB first.")
+	}
+	return db
+}
+
+// migrateDB ensures required tables exist in the database
 func migrateDB() {
 	queries := []string{
 		`CREATE TABLE IF NOT EXISTS users (
@@ -73,8 +101,7 @@ func migrateDB() {
 	}
 
 	for _, query := range queries {
-		_, err := DB.Exec(query)
-		if err != nil {
+		if _, err := db.Exec(query); err != nil {
 			log.Fatalf("Error creating table: %v\nQuery: %s", err, query)
 		}
 	}

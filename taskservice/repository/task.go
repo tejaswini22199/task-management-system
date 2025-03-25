@@ -5,18 +5,22 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/tejaswini22199/task-management-system/database" // Import the db package
 	"github.com/tejaswini22199/task-management-system/taskservice/models"
 )
 
 var db *sql.DB
 
-func InitDB(database *sql.DB) {
-	db = database
+// Initialize the repository with the singleton DB instance
+func InitRepository() {
+	db = database.GetDB() // Fetch the DB instance from the singleton
 }
 
 func CreateTask(task models.Task, userIDs []int) (models.Task, error) {
 	tx, err := db.Begin() // Start transaction
+
 	if err != nil {
+		fmt.Println("line 23")
 		return task, err
 	}
 

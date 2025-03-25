@@ -89,7 +89,7 @@
 // 			title VARCHAR(255) NOT NULL,
 // 			description TEXT,
 // 			status VARCHAR(50) DEFAULT 'todo',
-// 			created_by INTEGER NOT NULL,  
+// 			created_by INTEGER NOT NULL,
 // 			created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 // 		);`,
 
@@ -284,7 +284,6 @@
 // 		return
 // 	}
 
-
 // 	// Ensure input user IDs are unique using a set
 // 	uniqueUserIDs := make(map[int]struct{})
 // 	for _, id := range input.UserIDs {
@@ -341,7 +340,7 @@
 
 // 	// Insert task and get task ID
 // 	var taskID int
-// 	query := `INSERT INTO tasks (title, description, status, created_by, created_at) 
+// 	query := `INSERT INTO tasks (title, description, status, created_by, created_at)
 // 			  VALUES ($1, $2, $3, $4, NOW()) RETURNING id`
 // 	err = tx.QueryRow(query, input.Title, input.Description, input.Status, authUserID).Scan(&taskID)
 // 	if err != nil {
@@ -494,7 +493,6 @@
 // 	})
 // }
 
-
 // func getTasksByStatus(c *gin.Context) {
 // 	status := c.Param("status")
 
@@ -554,8 +552,6 @@
 // 	// Return true if the user is the owner
 // 	return true, ownerID, nil
 // }
-
-
 
 // func updateTask(c *gin.Context) {
 // 	id := c.Param("id")
@@ -659,11 +655,11 @@
 
 // func main() {
 // 	r := gin.Default()
-	
+
 // 	// Public routes
 // 	r.POST("/register", registerUser)
 // 	r.POST("/login", loginUser)
-	
+
 // 	// Protected routes
 // 	authorized := r.Group("/")
 // 	authorized.Use(authMiddleware())
@@ -679,7 +675,6 @@
 // 	r.Run(":8080")
 // }
 
-
 package main
 
 import (
@@ -687,12 +682,10 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/tejaswini22199/task-management-system/config"
-	"github.com/tejaswini22199/task-management-system/database"
 )
 
 func main() {
 	config.LoadEnv() // Load environment variables
-	db.InitDB()      // Initialize DB connection
 
 	router := gin.Default()
 

@@ -2,6 +2,7 @@ package utils
 
 import (
 	"errors"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -36,11 +37,15 @@ func ValidateInputUserIDs(inputUserIds []int, c *gin.Context) ([]int, bool) {
 	for id := range uniqueUserIDs {
 		validUserIDs = append(validUserIDs, id)
 	}
+
 	// Validate if user IDs exist
-	if len(inputUserIds) > 0 {
-		existingUserIDs, err := repository.GetExistingUserIDs(inputUserIds)
+	if len(validUserIDs) > 0 {
+		existingUserIDs, err := repository.GetExistingUserIDs(validUserIDs)
+		fmt.Println("line 44")
+		fmt.Println(existingUserIDs, err)
+
 		if err != nil {
-			c.JSON(http.StatusInternalServerError, gin.H{"error": "Database error"})
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()}) // Send the actual error message
 			return nil, false
 		}
 

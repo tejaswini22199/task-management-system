@@ -9,7 +9,7 @@ import (
 	"github.com/tejaswini22199/task-management-system/authservice/utils"
 	"github.com/tejaswini22199/task-management-system/taskservice/models"
 	"github.com/tejaswini22199/task-management-system/taskservice/services"
-	taskutils "github.com/tejaswini22199/task-management-system/taskservice/utils"
+	taskUtils "github.com/tejaswini22199/task-management-system/taskservice/utils"
 )
 
 // 	userID, exists := c.Get("user_id")
@@ -46,9 +46,26 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	taskutils.ValidateTaskStatus(input.Status)
-	utils.ValidateInputUserIDs(input.UserIDs, c)
-	task, err := services.CreateTask(input, userID)
+	fmt.Println("the value of input status " + input.Status)
+
+	isValid, errMsg := taskUtils.ValidateTaskStatus(input.Status)
+
+	if !isValid {
+		fmt.Println("task status is not valid")
+		c.JSON(http.StatusBadRequest, gin.H{"error": errMsg})
+		return
+	}
+
+	fmt.Println("line 59")
+
+	validUserIDs, isValid := utils.ValidateInputUserIDs(input.UserIDs, c)
+
+	if !isValid {
+		return // Stop execution if user ID validation fails
+	}
+
+	fmt.Println("line 67")
+	task, err := services.CreateTask(input, userID, validUserIDs)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create task"})
 		return
