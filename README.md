@@ -77,7 +77,7 @@ docker compose up -d
 
 ```
 
-#### To run the db container 
+#### To run the database container 
 
 ```
 Docker ps 
@@ -122,51 +122,70 @@ taskdb=# select * from tasks_users;
 {{host}}:{{port}}
 ```
 
+Main Service : Main Service (As of now, it doesn't serve any APIs)
+
 * host = "http://localhost/"
 * port = 8080
+
+Auth Service: Responsible for serving Authorization APIs like register and login
+
+* host = "http://localhost/"
+* port = 8000 
+
+Tasks Service: Responsible for serving Tasks CRUD APIs 
+
+* host = "http://localhost/"
+* port = 8001
 
 #### 1. Register User 
 
 Endpoint: 
 
 ```
-POST {{host}}:{{port}}/register
+POST {{host}}:{{port}}/auth/register
 ```
 
 Description: 
 
 ```
-This API endpoint is used to register a new user. It requires the user's details (such as name, email, and password) to create a new account. Upon successful registration, the user's data is stored in the database, and the user can log in with the provided credentials.
-
+This API endpoint is used to register a new user. It requires the user's details (Name, Email, and Password) to create a new account. Upon successful registration, the user's data is stored in the database, and the user is provided with a token which they can use while using the Tasks APIs.
 ```
 
 Request: 
 
 ```
-curl -X POST "http://localhost:8080/register"  -H "Content-Type: application/json" -d '{
-           "Name": "tejaswini",
-           "Email": "tejaswini@example.com",
+curl -X POST http://localhost:8000/auth/register \
+     -H "Content-Type: application/json" \
+     -d '{
+           "Name": "testuser",
+           "Email": "test@example.com",
            "Password": "securepassword"
          }'
-         
+
 ```
+
 Response: 
 
 ```
+{"message":"User registered successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDI5NzI0ODUsInVzZXJfaWQiOjF9.bSlEnWHfCkXc0c2t-ObVVlZTctZw3f4H_1VeiWAnEoE","user_id":1}
+```
 
-{"message":"User registered successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4Mjg2MTd9.Mj8vug-iWGSHo7PzYSxnFqlCo3rQPR8vu0J6ah0u46s","user_id":1}
+Database Output:
 
+``` 
+taskdb=# select * from users;
+ id |   name   |      email       |                           password                           |         created_at         
+----+----------+------------------+--------------------------------------------------------------+----------------------------
+  1 | testuser | test@example.com | $2a$14$2972w3oM3JdabJEJ9R.Yq.05ReLnnGleUHpy7fZwc0XsIz6iteiUy | 2025-03-25 07:01:25.916085
+(1 row)
 ```
 
 #### 2. Login as User 
 
 Endpoint:
 
-
 ```
-
-POST {{host}}:{{port}}/login
-
+POST {{host}}:{{port}}/auth/login
 ```
 
 Description: 
@@ -182,9 +201,12 @@ Request:
 
 ```
 
-curl -X POST "http://localhost:8080/login"  -H "Content-Type: application/json" -d '{
-           "Email": "tejaswini@example.com",
-           "Password": "securepassword"
+tejaswinivakkalagaddi@Tejaswinis-MacBook-Air task-management-system % curl -X POST http://localhost:8000/auth/login \   
+     -H "Content-Type: application/json" \
+     -d '{
+           "Name": "testuser2",
+           "Email": "test2@example.com",
+           "Password": "securepassword2"
          }'
 ```
 
@@ -192,7 +214,7 @@ Response:
 
 
 ```
-{"message":"Login successful","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4Mjg3MDB9.1jdxFBT7kNZ4NxlUAvtMIXCgzd0oCzkfVoBtQkp_YQg","user_id":1}
+"message":"Login successful","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDI5NzMyMDQsInVzZXJfaWQiOjJ9.Ns0LN7zpHqC8IzAgg2R_bkA9aKQUBhvgfh2shRUaLng","user_id":2
 ```
 
 

@@ -1,7 +1,9 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
+	"os"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -9,7 +11,7 @@ import (
 )
 
 // Replace this with a secure secret key
-var JWTSecret = []byte("your-secure-secret")
+var JWTSecret = []byte(os.Getenv("JWT_SECRET"))
 
 type Claims struct {
 	UserID int `json:"user_id"`
@@ -20,6 +22,8 @@ type Claims struct {
 func AuthMiddleware() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		authHeader := c.GetHeader("Authorization")
+		fmt.Println("🔥 Received Authorization Header:", authHeader)
+
 		if authHeader == "" {
 			c.JSON(http.StatusUnauthorized, gin.H{"error": "Authorization header required"})
 			c.Abort()

@@ -106,7 +106,6 @@
 // 		return
 // 	}
 
-
 // 	// Ensure input user IDs are unique using a set
 // 	uniqueUserIDs := make(map[int]struct{})
 // 	for _, id := range input.UserIDs {
@@ -163,7 +162,7 @@
 
 // 	// Insert task and get task ID
 // 	var taskID int
-// 	query := `INSERT INTO tasks (title, description, status, created_by, created_at) 
+// 	query := `INSERT INTO tasks (title, description, status, created_by, created_at)
 // 			  VALUES ($1, $2, $3, $4, NOW()) RETURNING id`
 // 	err = tx.QueryRow(query, input.Title, input.Description, input.Status, authUserID).Scan(&taskID)
 // 	if err != nil {
@@ -316,7 +315,6 @@
 // 	})
 // }
 
-
 // func getTasksByStatus(c *gin.Context) {
 // 	status := c.Param("status")
 
@@ -376,8 +374,6 @@
 // 	// Return true if the user is the owner
 // 	return true, ownerID, nil
 // }
-
-
 
 // func updateTask(c *gin.Context) {
 // 	id := c.Param("id")
@@ -480,8 +476,6 @@
 // 		, gin.H{"message": "Task deleted successfully"})
 // }
 
-
-
 //  func authMiddleware() gin.HandlerFunc {
 // 	return func(c *gin.Context) {
 // 		authHeader := c.GetHeader("Authorization")
@@ -523,8 +517,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	database "github.com/tejaswini22199/task-management-system/database"
-	"github.com/tejaswini22199/task-management-system/taskservice/repository"
-	"github.com/tejaswini22199/task-management-system/taskservice/services"
 	"github.com/tejaswini22199/task-management-system/taskservice/routes"
 )
 
@@ -532,13 +524,13 @@ func main() {
 	log.Println("Starting Tasks Service...")
 
 	// Initialize Database Connection
-	db := database.InitDB()
+	database.InitDB()
 
 	// Create a new Gin router
 	r := gin.Default()
 
 	// Register routes with dependencies
-	routes.RegisterTaskRoutes(r, taskService)
+	routes.RegisterTaskRoutes(r)
 
 	log.Println("Tasks Service is running on port 8001")
 	r.Run(":8001")

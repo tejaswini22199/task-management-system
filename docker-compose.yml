@@ -13,7 +13,9 @@ services:
       - postgres_data:/var/lib/postgresql/data
  
   main-service:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: main_service
     restart: always
     depends_on:
@@ -28,13 +30,15 @@ services:
       DB_NAME: taskdb
     ports:
       - "8080:8080"
-
+    command: ["./main"]
 
   auth-service:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: auth_service
     restart: always
-    working_dir: /app
+    working_dir: /root/
     command: ["./auth"]
     depends_on:
       - db
@@ -48,10 +52,12 @@ services:
       - "8000:8000"
 
   tasks-service:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: tasks_service
     restart: always
-    working_dir: /app
+    working_dir: /root/
     command: ["./tasks"]
     depends_on:
       - db

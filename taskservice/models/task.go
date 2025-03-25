@@ -12,18 +12,18 @@ const (
 )
 
 type Task struct {
-	ID          int       `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Status      TaskStatus   `json:"status"`
-	CreatedBy   int        `json:"created_by"`  // User ID of the task creator 
-	CreatedAt   time.Time `json:"created_at"` // List of user IDs assigned to this task
+	ID          int        `json:"id"`
+	Title       string     `json:"title" binding:"required"`
+	Description string     `json:"description" binding:"required"`
+	Status      TaskStatus `json:"status" binding:"required"`
+	CreatedBy   int        `json:"created_by"` // User ID of the task creator
+	CreatedAt   time.Time  `json:"created_at"` // List of user IDs assigned to this task
 }
 
 // TaskInput is used for creating or updating a task
 type TaskInput struct {
 	Title       string     `json:"title" binding:"required"`
-	Description string     `json:"description"`
+	Description string     `json:"description" binding:"required"`
 	Status      TaskStatus `json:"status" binding:"required"`
 	CreatedBy   int        `json:"created_by" binding:"required"`
 }

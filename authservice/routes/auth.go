@@ -1,9 +1,8 @@
 package routes
 
 import (
-	"github.com/tejaswini22199/task-management-system/authservice/controllers"
-
 	"github.com/gin-gonic/gin"
+	"github.com/tejaswini22199/task-management-system/authservice/controllers"
 )
 
 func RegisterAuthRoutes(router *gin.Engine) {
