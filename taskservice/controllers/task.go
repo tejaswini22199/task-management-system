@@ -56,15 +56,12 @@ func CreateTask(c *gin.Context) {
 		return
 	}
 
-	fmt.Println("line 59")
-
 	validUserIDs, isValid := utils.ValidateInputUserIDs(input.UserIDs, c)
 
 	if !isValid {
 		return // Stop execution if user ID validation fails
 	}
 
-	fmt.Println("line 67")
 	task, err := services.CreateTask(input, userID, validUserIDs)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to create task"})
@@ -75,18 +72,49 @@ func CreateTask(c *gin.Context) {
 }
 
 func GetTasks(c *gin.Context) {
-	tasks, err := services.GetTasks()
+	userID, err := utils.ValidateUserID(c)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Extract pagination parameters from query params
+	page, _ := strconv.Atoi(c.DefaultQuery("page", "1"))    // Default page = 1
+	limit, _ := strconv.Atoi(c.DefaultQuery("limit", "20")) // Default limit = 20
+
+	if page < 1 {
+		page = 1
+	}
+	if limit < 1 {
+		limit = 20
+	}
+
+	fmt.Println("Authenticated User ID:", userID)
+	tasks, total, err := services.GetTasks(userID, page, limit) // Pass page & limit
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{"tasks": tasks})
+	c.JSON(http.StatusOK, gin.H{
+		"tasks":       tasks,
+		"total_tasks": total,
+		"page":        page,
+		"limit":       limit,
+		"total_pages": (total + limit - 1) / limit, // Calculate total pages
+	})
 }
 
 func GetTaskByID(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	task, err := services.GetTaskByID(id)
+	userID, err := utils.ValidateUserID(c)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	task, err := services.GetTaskByID(userID)
 	if err != nil {
 		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
 		return
@@ -97,8 +125,15 @@ func GetTaskByID(c *gin.Context) {
 
 func GetTasksByStatus(c *gin.Context) {
 	status := c.Param("status")
+	userID, err := utils.ValidateUserID(c)
 
-	tasks, err := services.GetTasksByStatus(status)
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	tasks, err := services.GetTasksByStatus(status, userID)
+
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to fetch tasks"})
 		return
@@ -108,16 +143,28 @@ func GetTasksByStatus(c *gin.Context) {
 }
 
 func UpdateTask(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	var input models.TaskInput
-	if err := c.ShouldBindJSON(&input); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid input"})
+	userID, err := utils.ValidateUserID(c)
+
+	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   err.Error(),
+			"user_id": userID, // Optional: Might be nil in case of an error
+		})
 		return
 	}
 
-	task, err := services.UpdateTask(id, input)
+	var input models.Task
+	if err := c.ShouldBindJSON(&input); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Invalid input",
+			"user_id": userID,
+		})
+		return
+	}
+
+	task, err := services.UpdateTask(input.ID, input)
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update task"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 
@@ -125,10 +172,17 @@ func UpdateTask(c *gin.Context) {
 }
 
 func DeleteTask(c *gin.Context) {
-	id, _ := strconv.Atoi(c.Param("id"))
-	err := services.DeleteTask(id)
+	userID, err := utils.ValidateUserID(c)
+
 	if err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete task"})
+		c.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = services.DeleteTask(userID)
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err})
 		return
 	}
 

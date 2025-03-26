@@ -148,37 +148,49 @@ POST {{host}}:{{port}}/auth/register
 Description: 
 
 ```
-This API endpoint is used to register a new user. It requires the user's details (Name, Email, and Password) to create a new account. Upon successful registration, the user's data is stored in the database, and the user is provided with a token which they can use while using the Tasks APIs.
+This API endpoint is used to register a new user. It requires the user's details (Name, Email, and Password)
+ to create a new account. Upon successful registration, the user's data is stored in the database, and the 
+ user is provided with a token which they can use while using the Tasks APIs.
 ```
 
 Request: 
 
 ```
-curl -X POST http://localhost:8000/auth/register \
-     -H "Content-Type: application/json" \
-     -d '{
-           "Name": "testuser",
-           "Email": "test@example.com",
+curl -X POST "http://localhost:8000/auth/register"  -H "Content-Type: application/json" -d '{
+           "Name": "tejaswini",
+           "Email": "tejaswini@example.com",
            "Password": "securepassword"
          }'
+```
 
+```
+curl -X POST "http://localhost:8000/auth/register"  -H "Content-Type: application/json" -d '{
+           "Name": "aruna",
+           "Email": "arunav@example.com",
+           "Password": "secure2password"
+         }'  
 ```
 
 Response: 
 
 ```
-{"message":"User registered successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDI5NzI0ODUsInVzZXJfaWQiOjF9.bSlEnWHfCkXc0c2t-ObVVlZTctZw3f4H_1VeiWAnEoE","user_id":1}
+{"message":"User registered successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMzYzOTYsInVzZXJfaWQiOjF9.--VxoU1EHTXAa_JZ5ZKIVaKyV-Huos90nfELSuPxacY","user_id":1}
+```
+
+```
+{"message":"User registered successfully","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMzY0MDIsInVzZXJfaWQiOjJ9.LoM8bVUXNB78L4Twb4K5T1eZ8F-4ktjF54TYWh1x3sI","user_id":2}  
 ```
 
 Database Output:
 
 ``` 
 taskdb=# select * from users;
- id |   name   |      email       |                           password                           |         created_at         
-----+----------+------------------+--------------------------------------------------------------+----------------------------
-  1 | testuser | test@example.com | $2a$14$2972w3oM3JdabJEJ9R.Yq.05ReLnnGleUHpy7fZwc0XsIz6iteiUy | 2025-03-25 07:01:25.916085
-(1 row)
+ id |   name    |         email         |                           password                           |         created_at         
+----+-----------+-----------------------+--------------------------------------------------------------+----------------------------
+  1 | tejaswini | tejaswini@example.com | $2a$14$6oIEf8XnhdU/oEwcqJEnBeLbT2VY9P55LW0WFNMLUR08oA/2aVkPm | 2025-03-26 00:46:36.361225
+  2 | aruna     | arunav@example.com    | $2a$14$fXOF9rXUpISibOJKO2Qce.2VsYAtMWGDflj4M8uSWJrT1wZa5iulW | 2025-03-26 00:46:42.169147
 ```
+
 
 #### 2. Login as User 
 
@@ -201,21 +213,30 @@ Request:
 
 ```
 
-tejaswinivakkalagaddi@Tejaswinis-MacBook-Air task-management-system % curl -X POST http://localhost:8000/auth/login \   
-     -H "Content-Type: application/json" \
-     -d '{
-           "Name": "testuser2",
-           "Email": "test2@example.com",
-           "Password": "securepassword2"
-         }'
+curl -X POST "http://localhost:8000/auth/login"  -H "Content-Type: application/json" -d '{
+           "Name": "tejaswini",
+           "Email": "tejaswini@example.com",
+           "Password": "securepassword"
+         }'                                                    
 ```
+```
+curl -X POST "http://localhost:8000/auth/login"  -H "Content-Type: application/json" -d '{
+           "Name": "aruna",
+           "Email": "arunav@example.com",
+           "Password": "secure2password"
+         }'
 
+```
 Response: 
 
 
 ```
-"message":"Login successful","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDI5NzMyMDQsInVzZXJfaWQiOjJ9.Ns0LN7zpHqC8IzAgg2R_bkA9aKQUBhvgfh2shRUaLng","user_id":2
+{"message":"Login successful","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMzY0MDgsInVzZXJfaWQiOjF9.K4lM8YWBjefNlPjKjSNbfSbOukgkyUeksJSvLIU3gXY","user_id":1}   
 ```
+
+```
+{"message":"Login successful","token":"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMzY0MTQsInVzZXJfaWQiOjJ9.UHspiDItQZV2Lxt1RecXlGI2Ny402OxL549V9piHfAs","user_id":2}
+```                                                        
 
 
 #### 3. Create a Task 
@@ -250,15 +271,16 @@ Request 1:
 
 ```
 
-curl -X POST http://localhost:8080/tasks \
+curl -X POST http://localhost:8001/tasks \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMDA5MjksInVzZXJfaWQiOjF9.Uy79rzdHPpQI6xR3_RYUD9B1qJN51Fbz61hst-biCKg" \
      -d '{
            "title": "Complete API Integration",
            "description": "Implement API calls and authentication",
-           "status": "pending",
+           "status": "To Do",  
            "user_ids": [1, 3]
          }'
+
 
 ```
 
@@ -266,7 +288,7 @@ Response 1:
 
 ```
 
-{"error":"Some user IDs do not exist","invalid_users":[3]}
+{"error":"Some user IDs do not exist","invalid_users":[3]}%   
 
 ```
 
@@ -274,9 +296,9 @@ Request 2:
 
 
 ```
-curl -X POST http://localhost:8080/tasks \
+ curl -X POST http://localhost:8001/tasks \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMDA5MjksInVzZXJfaWQiOjF9.Uy79rzdHPpQI6xR3_RYUD9B1qJN51Fbz61hst-biCKg" \
      -d '{
            "title": "Complete API Integration",
            "description": "Implement API calls and authentication",
@@ -286,12 +308,64 @@ curl -X POST http://localhost:8080/tasks \
 
 ```
 
+```
+curl -X POST http://localhost:8001/tasks \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMzY0MTQsInVzZXJfaWQiOjJ9.UHspiDItQZV2Lxt1RecXlGI2Ny402OxL549V9piHfAs" \
+     -d '{
+           "title": "Fix Bugs in API",
+           "description": "Fix critical bugs in the API",
+           "status": "In Progress",
+           "user_ids": [2]
+         }'
+```
+
+```
+curl -X POST http://localhost:8001/tasks \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMzY0MDgsInVzZXJfaWQiOjF9.K4lM8YWBjefNlPjKjSNbfSbOukgkyUeksJSvLIU3gXY" \
+     -d '{
+           "title": "Complete Frontend Integration",
+           "description": "Implement frontend integration with backend I",
+           "status": "Completed",
+           "user_ids": [1]
+         }'                                                                                                  
+```
+
 Response 2: 
 
 
 ```
+{"message":"Task created successfully","task":{"id":1,"title":"Complete API Integration","description":"Implement API calls and authentication","status":"To Do","created_by":1,"created_at":"0001-01-01T00:00:00Z"}}
+```
 
-{"assigned_users":[1,2],"message":"Task created successfully","task_id":1}
+```
+{"message":"Task created successfully","task":{"id":2,"title":"Fix Bugs in API","description":"Fix critical bugs in the API","status":"In Progress","created_by":2,"created_at":"0001-01-01T00:00:00Z"}}
+```
+
+```
+{"message":"Task created successfully","task":{"id":3,"title":"Complete Frontend Integration","description":"Implement frontend integration with backend I","status":"Completed","created_by":1,"created_at":"0001-01-01T00:00:00Z"}}
+```
+
+Database Output: 
+
+```
+taskdb=# select * from tasks;
+ id |             title             |                  description                  |   status    | created_by |         created_at         
+----+-------------------------------+-----------------------------------------------+-------------+------------+----------------------------
+  1 | Complete API Integration      | Implement API calls and authentication        | To Do       |          1 | 2025-03-26 00:47:18.534694
+  2 | Fix Bugs in API               | Fix critical bugs in the API                  | In Progress |          2 | 2025-03-26 01:14:47.298008
+  3 | Complete Frontend Integration | Implement frontend integration with backend I | Completed   |          1 | 2025-03-26 01:17:48.939929
+(3 rows)
+
+taskdb=# select * from tasks_users;
+ id | user_id | task_id |        assigned_at         
+----+---------+---------+----------------------------
+  1 |       1 |       1 | 2025-03-26 00:47:18.534694
+  2 |       2 |       1 | 2025-03-26 00:47:18.534694
+  3 |       2 |       2 | 2025-03-26 01:14:47.298008
+  4 |       1 |       3 | 2025-03-26 01:17:48.939929
+(4 rows)
 
 ```
 
@@ -300,7 +374,33 @@ Request 3:
 
 ```
 
-curl -X POST http://localhost:8080/tasks \
+curl -X POST http://localhost:8001/tasks \
+     -H "Content-Type: application/json" \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMDA5MjksInVzZXJfaWQiOjF9.Uy79rzdHPpQI6xR3_RYUD9B1qJN51Fbz61hst-biCKg" \
+     -d '{
+           "title": "Complete API Integration",
+           "description": "Implement API calls and authentication",
+           "status": "pending",
+           "user_ids": [1, 3]
+         }'
+
+
+ ```
+
+Response 3: 
+
+```
+
+{"error":"Invalid status. Allowed values: To Do, In Progress, Completed"}
+
+```
+
+Request 4: 
+
+
+```
+
+curl -X POST http://localhost:8001/tasks \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
      -d '{
@@ -310,39 +410,13 @@ curl -X POST http://localhost:8080/tasks \
            "user_ids": [1, 2]
          }'
 
- ```
-
-Response 3: 
-
-```
-
-{"error":"Invalid status. Allowed values: To Do, In Progress, Completed"}%   
-
-```
-
-Request 4: 
-
-
-```
-
-curl -X POST http://localhost:8080/tasks \
-     -H "Content-Type: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY" \
-     -d '{
-           "title": "Fix Bugs in API",
-           "description": "Fix critical bugs in the API",
-           "status": "In Progress",
-           "user_ids": [2]
-         }'
-
 ```
 
 Response 4: 
 
 ```
-
 {"error":"Invalid token"}
-
+2025-03-26 06:37:32 Error: token has invalid claims: token is expired
 ```
 
 db output:
@@ -355,7 +429,6 @@ taskdb=# select * from tasks;
   1 | Complete API Integration      | Implement API calls and authentication      | To Do       |          1 | 2025-03-23 17:58:55.451846
   2 | Complete Frontend Integration | Implement frontend integration with backend | Completed   |          1 | 2025-03-23 17:59:44.037258
   3 | Fix Bugs in API               | Fix critical bugs in the API                | In Progress |          2 | 2025-03-23 18:09:00.198216
-
 
 ```
 
@@ -376,24 +449,80 @@ This API endpoint retrieves a list of all tasks stored in the system. The tasks 
 
 Request1: 
 
- ```
- 
- curl -X GET http://localhost:8080/tasks \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY"
-
-     Here user id is 2 (after decoding the bearer token). So, the task was fetched since user 2 is assigned to it. 
-    {
-  "user_id": 2,
-  "exp": 1742833386
-}
-
+```
+curl -X GET "http://localhost:8001/tasks?page=1&limit=5" \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwNzAwMjIsInVzZXJfaWQiOjJ9.WZpTaZ2njjbSm1i_3eO6RAGjsRe_uUCwEjEwmfQP3eQ"
 ```
 
+Database O/P:
+
+```
+taskdb=# select * from tasks_users;
+ id | user_id | task_id |        assigned_at         
+----+---------+---------+----------------------------
+  1 |       1 |       1 | 2025-03-26 10:16:54.443524
+  2 |       1 |       2 | 2025-03-26 10:17:00.12955
+  3 |       2 |       2 | 2025-03-26 10:17:00.12955
+  4 |       2 |       3 | 2025-03-26 10:17:22.588586
+  5 |       2 |       4 | 2025-03-26 10:19:10.39979
+  6 |       2 |       5 | 2025-03-26 10:19:18.598814
+  7 |       2 |       6 | 2025-03-26 10:19:27.546983
+  8 |       2 |       7 | 2025-03-26 10:19:34.771187
+  9 |       2 |       8 | 2025-03-26 10:19:42.61439
+```
 Response1:
 
 ```
 
-{"limit":20,"page":1,"tasks":[{"created_at":"2025-03-23T16:24:52.835104Z","description":"Implement API calls and authentication","id":1,"status":"To Do","title":"Complete API Integration","user_ids":[1,2]}],"total_pages":1,"total_tasks":1}%  
+{
+  "limit": 5,
+  "page": 1,
+  "tasks": [
+    {
+      "id": 2,
+      "title": "Complete API Integration",
+      "description": "Implement API calls and authentication",
+      "status": "To Do",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:17:00.12955Z"
+    },
+    {
+      "id": 3,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:17:22.588586Z"
+    },
+    {
+      "id": 4,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 2 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:10.39979Z"
+    },
+    {
+      "id": 5,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 3 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:18.598814Z"
+    },
+    {
+      "id": 6,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 4 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:27.546983Z"
+    }
+  ],
+  "total_pages": 2,
+  "total_tasks": 7
+}
 
 ```
 
@@ -401,7 +530,7 @@ Request 2:
 
 ```
 
-curl -X GET http://localhost:8080/tasks \
+curl -X GET http://localhost:8001/tasks \
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY 
 "
 {
@@ -425,7 +554,7 @@ Request 3 :
 
 ```
 
- curl -X GET http://localhost:8080/tasks  
+ curl -X GET http://localhost:8001/tasks  
 
 ```
 
@@ -467,8 +596,8 @@ Request1:
 
 ```
 
-curl -X GET http://localhost:8080/tasks/1 \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY"
+curl -X GET http://localhost:8001/tasks/1 \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMDA4NzEsInVzZXJfaWQiOjF9.-Hq181pG0hTAfSRjIByfZe9m_V7VdwvbPb58kr6dLhg"
 
 ```
 
@@ -476,16 +605,23 @@ Response1:
 
 
 ```
-
-{"task":{"created_at":"2025-03-23T16:24:52.835104Z","description":"Implement API calls and authentication","id":1,"status":"To Do","title":"Complete API Integration","user_ids":[1,2]}} 
-
+{
+  "task": {
+    "id": 1,
+    "title": "Complete Frontend Integration",
+    "description": "Implement frontend integration with backend",
+    "status": "Completed",
+    "created_by": 1,
+    "created_at": "2025-03-26T10:16:54.443524Z"
+  }
+}
 ```
 
 Request2: 
 
 ```
 
-curl -X GET http://localhost:8080/tasks/1 \ 
+curl -X GET http://localhost:8001/tasks/1 \ 
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjozLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY"
 
  ```
@@ -502,8 +638,8 @@ Request3:
 
 ```
 
- curl -X GET http://localhost:8080/tasks/2 \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY"
+ curl -X GET http://localhost:8001/tasks/11 \              
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMDA4NzEsInVzZXJfaWQiOjF9.-Hq181pG0hTAfSRjIByfZe9m_V7VdwvbPb58kr6dLhg"
 
 ```
 
@@ -537,12 +673,27 @@ status (string): The status of the task (e.g., "To Do", "In Progress", "Complete
 
 ```
 
+```
+Database 
+ id |             title             |                 description                 |   status    | created_by |         created_at         
+----+-------------------------------+---------------------------------------------+-------------+------------+----------------------------
+  1 | Complete Frontend Integration | Implement frontend integration with backend | Completed   |          1 | 2025-03-26 10:16:54.443524
+  2 | Complete API Integration      | Implement API calls and authentication      | To Do       |          1 | 2025-03-26 10:17:00.12955
+  3 | Fix Bugs in API               | Fix critical bugs in the API                | In Progress |          2 | 2025-03-26 10:17:22.588586
+  4 | Fix Bugs in API               | Fix critical bugs 2 in the API              | In Progress |          2 | 2025-03-26 10:19:10.39979
+  5 | Fix Bugs in API               | Fix critical bugs 3 in the API              | In Progress |          2 | 2025-03-26 10:19:18.598814
+  6 | Fix Bugs in API               | Fix critical bugs 4 in the API              | In Progress |          2 | 2025-03-26 10:19:27.546983
+  7 | Fix Bugs in API               | Fix critical bugs 5 in the API              | In Progress |          2 | 2025-03-26 10:19:34.771187
+  8 | Fix Bugs in API               | Fix critical bugs 6 in the API              | In Progress |          2 | 2025-03-26 10:19:42.61439
+```
+
 Request1: 
 
 ``` 
 
-curl -X GET http://localhost:8080/tasks/status/In%20Progress \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY"
+curl -X GET http://localhost:8001/tasks/status/In%20Progress \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwMDA4NzEsInVzZXJfaWQiOjF9.-Hq181pG0hTAfSRjIByfZe9m_V7VdwvbPb58kr6dLhg"
+
 
 ```
 
@@ -550,7 +701,85 @@ Response1:
 
 ```
 
-{"tasks":null}
+{
+  "tasks": [
+    {
+      "id": 3,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:17:22.588586Z"
+    },
+    {
+      "id": 4,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 2 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:10.39979Z"
+    },
+    {
+      "id": 5,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 3 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:18.598814Z"
+    },
+    {
+      "id": 6,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 4 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:27.546983Z"
+    },
+    {
+      "id": 7,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 5 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:34.771187Z"
+    },
+    {
+      "id": 8,
+      "title": "Fix Bugs in API",
+      "description": "Fix critical bugs 6 in the API",
+      "status": "In Progress",
+      "created_by": 0,
+      "created_at": "2025-03-26T10:19:42.61439Z"
+    }
+  ]
+}
+
+```
+Db output: 
+```
+taskdb=# select * from users
+taskdb-# ;
+ id |   name    |         email         |                           password                           |         created_at         
+----+-----------+-----------------------+--------------------------------------------------------------+----------------------------
+  1 | tejaswini | tejaswini@example.com | $2a$14$qf62mcmnYrG.tTUxDuwvEOnVFC2VQCRqUeC6zYz2pfeXjS35e8lxG | 2025-03-26 12:25:15.311715
+  2 | aruna     | arunav@example.com    | $2a$14$ImvSCZBtKJmyU/ttR6728ukaRy/gJNJgMD7RkU40ZXswg8PFDARLe | 2025-03-26 12:25:19.527617
+(2 rows)
+
+taskdb=# select * from tasks;
+ id |             title             |                 description                 |   status    | created_by |         created_at         
+----+-------------------------------+---------------------------------------------+-------------+------------+----------------------------
+  1 | Complete Frontend Integration | Implement frontend integration with backend | Completed   |          1 | 2025-03-26 12:25:33.592678
+  2 | Complete API Integration      | Implement API calls and authentication      | To Do       |          1 | 2025-03-26 12:25:38.971815
+  3 | Fix Bugs in API               | Fix critical bugs in the API                | In Progress |          2 | 2025-03-26 12:25:56.100886
+(3 rows)
+
+taskdb=# select * from tasks_users;
+ id | user_id | task_id |        assigned_at         
+----+---------+---------+----------------------------
+  1 |       1 |       1 | 2025-03-26 12:25:33.592678
+  2 |       1 |       2 | 2025-03-26 12:25:38.971815
+  3 |       2 |       2 | 2025-03-26 12:25:38.971815
+  4 |       2 |       3 | 2025-03-26 12:25:56.100886
 
 ```
 
@@ -558,8 +787,8 @@ Request 2:
 
 ```
 
- curl -X GET http://localhost:8080/tasks/status/To%20Do \      
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY"
+curl -X GET http://localhost:8001/tasks/status/To%20Do \      
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwNTMzNjUsInVzZXJfaWQiOjF9.cH0BOA5X3NR203ReJejZX7QYjl6YfKyZvRZmDe5j7oM" 
 
 ```
 
@@ -567,11 +796,32 @@ Response 2:
 
 ```
 
-{"tasks":[{"created_at":"2025-03-23T16:24:52.835104Z","description":"Implement API calls and authentication","id":1,"status":"To Do","title":"Complete API Integration"}]}   
-
+{
+  "tasks": [
+    {
+      "id": 2,
+      "title": "Complete API Integration",
+      "description": "Implement API calls and authentication",
+      "status": "To Do",
+      "created_by": 0,
+      "created_at": "2025-03-26T12:25:38.971815Z"
+    }
+  ]
+}         
 
 ```
 
+Request 3: 
+
+```
+tejaswinivakkalagaddi@Tejaswinis-MacBook-Air task-management-system % curl -X GET http://localhost:8001/tasks/status/In%20Progress \
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwNTMzNjUsInVzZXJfaWQiOjF9.cH0BOA5X3NR203ReJejZX7QYjl6YfKyZvRZmDe5j7oM"
+```
+
+Response 3: 
+```
+{"tasks":[]} // there are no tasks for user1 in progress and bearer token belongs to user 1
+```
 #### 7. Update Task 
 
 Endpoint:
@@ -638,7 +888,7 @@ taskdb=# select * from tasks;
 Request2 : 
 
   ``` 
-  curl -X PUT http://localhost:8080/tasks/4 \
+  curl -X PUT http://localhost:8001/tasks/4 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
      -d '{
@@ -661,7 +911,7 @@ Request2 :
   Request 3: 
 
 ```
- curl -X PUT http://localhost:8080/tasks/3 \
+ curl -X PUT http://localhost:8001/tasks/3 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
      -d '{
@@ -701,7 +951,7 @@ id (int): The ID of the task you want to delete.
 Request: 
 
 ```
- curl -X DELETE http://localhost:8080/tasks/4 \
+ curl -X DELETE http://localhost:8001/tasks/4 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
      -d '{
@@ -722,7 +972,7 @@ Response:
 Request 2: 
 
 ```
- curl -X DELETE http://localhost:8080/tasks/3 \
+ curl -X DELETE http://localhost:8001/tasks/3 \
      -H "Content-Type: application/json" \
      -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoxLCJleHAiOjE3NDI4MTIzNTJ9.PchfuUCqcaCR2JhUfWm7nkcMcDhvMJDsYGwxcS2Jygc" \
      -d '{
@@ -741,15 +991,9 @@ Response 2:
 Request 3: 
 
 ```
-curl -X DELETE http://localhost:8080/tasks/3 \
+curl -X DELETE http://localhost:8001/tasks/1 \
      -H "Content-Type: application/json" \
-     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoyLCJleHAiOjE3NDI4MzMzODZ9.VczoPaa2E28eFrio0OasqqyakIHR2OxPKPqs_AHJfWY" \
-     -d '{
-           "title": "Fix Bugs in Rest API",
-           "description": "Fix critical bugs in the API",
-           "status": "In Progress",
-           "user_ids": [2]
-         }'
+     -H "Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE3NDMwNTMzNjUsInVzZXJfaWQiOjF9.cH0BOA5X3NR203ReJejZX7QYjl6YfKyZvRZmDe5j7oM" 
 
  ```
 

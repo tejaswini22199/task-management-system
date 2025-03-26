@@ -516,17 +516,15 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	database "github.com/tejaswini22199/task-management-system/database"
-	"github.com/tejaswini22199/task-management-system/taskservice/repository"
 	"github.com/tejaswini22199/task-management-system/taskservice/routes"
 )
 
 func main() {
 	log.Println("Starting Tasks Service...")
 
-	// Initialize Database Connection
-	database.InitDB()
-	repository.InitRepository()
+	// // Initialize Database Connection
+	// database.InitDB()
+	// repository.InitRepository()
 
 	// Create a new Gin router
 	r := gin.Default()

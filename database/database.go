@@ -12,12 +12,12 @@ import (
 
 var (
 	db   *sql.DB
-	once sync.Once
+	once sync.Once // Ensures InitDB() is executed only once
 )
 
 // InitDB initializes the database connection only once
-func InitDB() {
-	once.Do(func() {
+func initDB() {
+	once.Do(func() { // Ensures InitDB runs only once
 		var err error
 
 		// Fetch database credentials from environment variables
@@ -28,16 +28,10 @@ func InitDB() {
 		port := os.Getenv("DB_PORT")
 
 		log.Println("Initializing Database...")
-
 		log.Printf("DB Config: host=%s user=%s dbname=%s port=%s\n", host, user, dbname, port)
 
 		if user == "" || password == "" || dbname == "" || host == "" || port == "" {
 			log.Fatal("Missing database environment variables")
-		}
-
-		// Default to localhost if no host is specified
-		if host == "" {
-			host = "localhost"
 		}
 
 		// Construct the connection string
@@ -46,7 +40,7 @@ func InitDB() {
 			host, user, password, dbname, port,
 		)
 
-		// Open a database connection
+		// Open a database connection (explicit assignment to global `db`)
 		db, err = sql.Open("postgres", connStr)
 		if err != nil {
 			log.Fatalf("Failed to connect to database: %v", err)
@@ -66,9 +60,7 @@ func InitDB() {
 
 // GetDB returns the singleton database instance
 func GetDB() *sql.DB {
-	if db == nil {
-		log.Fatal("Database not initialized. Call InitDB first.")
-	}
+	initDB() // Ensures the database is initialized before returning it
 	return db
 }
 

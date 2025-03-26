@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"errors"
 	"fmt"
-	"log"
 
 	"github.com/lib/pq"
 	"github.com/tejaswini22199/task-management-system/database"
@@ -13,15 +12,16 @@ import (
 var db *sql.DB
 
 // InitRepository initializes the repository with the singleton DB instance
-func InitRepository() {
-	db = database.GetDB()
-	if db == nil {
-		log.Fatal("Failed to initialize repository: database instance is nil")
-	}
-}
+// func InitRepository() {
+// 	db = database.GetDB()
+// 	if db == nil {
+// 		log.Fatal("Failed to initialize repository: database instance is nil")
+// 	}
+// }
 
 // InsertUser inserts a new user into the database
 func InsertUser(name, email, password string) (int, error) {
+	db := database.GetDB()
 	if db == nil {
 		return 0, errors.New("database connection is not initialized")
 	}
@@ -44,6 +44,7 @@ func InsertUser(name, email, password string) (int, error) {
 
 // GetUserByEmail retrieves a user by email
 func GetUserByEmail(email string) (int, string, error) {
+	db := database.GetDB()
 	if db == nil {
 		return 0, "", errors.New("database connection is not initialized")
 	}
@@ -66,6 +67,7 @@ func GetUserByEmail(email string) (int, string, error) {
 
 // GetExistingUserIDs fetches user IDs that exist in the database
 func GetExistingUserIDs(userIDs []int) ([]int, error) {
+	db := database.GetDB()
 	if db == nil {
 		return nil, errors.New("database connection is not initialized")
 	}

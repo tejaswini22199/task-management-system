@@ -143,18 +143,14 @@ import (
 	"log"
 
 	"github.com/gin-gonic/gin"
-	"github.com/tejaswini22199/task-management-system/authservice/repository"
+
 	"github.com/tejaswini22199/task-management-system/authservice/routes"
-	database "github.com/tejaswini22199/task-management-system/database"
 )
 
 func main() {
 	log.Println("Starting Auth Service...")
 
-	// Initialize Database Connection
-	database.InitDB()
-
-	repository.InitRepository()
+	// repository.InitRepository()
 
 	// Create a new Gin router
 	r := gin.Default()
